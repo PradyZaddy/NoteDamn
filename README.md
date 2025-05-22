@@ -1,12 +1,25 @@
-# React + Vite
+# NoteDamn
+> A real-time speech-to-text note-taking web app using WebRTC and OpenAI Whisper — built for creators, thinkers, and fast talkers.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Inspired by **Notre Dame**, built for the **damn note-takers**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- 🎧 **Start Session**: Capture audio using your microphone.
+- 🔄 **Real-Time Streaming**: Stream audio to the backend using WebRTC.
+- 🧠 **Whisper AI Integration**: Convert speech to text using OpenAI Whisper.
+- 📝 **Live Transcription**: Display transcribed text instantly on the UI.
+- ☁️ **Save Notes**: Store and view past sessions (coming soon).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Tech Stack
+
+- **Frontend**: React + Vite + Tailwind CSS
+- **Audio Capture**: `MediaDevices API`, `MediaRecorder API`
+- **Streaming**: WebRTC (`RTCPeerConnection`, `ICE`)
+- **Transcription Engine**: OpenAI Whisper (Python backend)
+- **Signaling Server**: WebSocket (Node.js or Python)
+- **Deployment**: TBD (Netlify / Vercel + Render / Railway / your choice)
