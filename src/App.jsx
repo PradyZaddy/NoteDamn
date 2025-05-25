@@ -1,67 +1,53 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 function App() {
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-  const ws = useRef(null);
-  const [socketConnected, setSocketConnected] = useState(false);
+  const localStreamRef = useRef(null);
+  const wsRef = useRef(null);
+  const pcRef = useRef(null);
+  const [connected, setConnected] = useState(false);
+
+  const SIGNALLING_SERVER = 'ws://localhost:8080'; // same as in the server.js
+  const ICE_SERVERS = {
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' }, // public STUN server
+    ],
+  };
 
   useEffect(() => {
-    ws.current = new WebSocket('ws://localhost:8080');
-
-    ws.current.onopen = () => {
-      console.log('Connected to WebSocket server');
-      setSocketConnected(true);
-    };
-
-    ws.current.onclose = () => {
-      console.log('Disconnected to WebSocket server');
-      setSocketConnected(false);
-    };
-
-    ws.current.onmessage = (message) => {
-      console.log('Message received: ', message);
-      // need to handle SDP stuff here
-    };
-
-    ws.current.onerror = (err) => {
-      console.error('WebSocket error:', err);
-    };
-
     return () => {
-      ws.current?.close();
+      if (pcRef.current) {
+        pcRef.current.close();
+      }
+
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
     };
   }, []);
 
-  const sendMessage = (data) => {
-    if (ws.current && socketConnected) {
-      ws.current.send(JSON.stringify(data));
-      console.log('📤 Sent to server:', data);
-    }
+  const startSession = async () => {
+    // this opens the WebSocket signalling server
+    wsRef.current = new WebSocket(SIGNALLING_SERVER);
+
+    wsRef.current.onopen = async () => {
+      console.log('Websocket connected to the Signalling Server');
+
+      // this creates the RTC Peer connection
+      const pc = new RTCPeerConnection(ICE_SERVERS);
+      pcRef.current = pc;
+
+      // this captures the audio and put it on our peer connection in real-time
+      const localStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+
+      localStreamRef.current = localStream;
+      localStream.getTrack().forEach((track) => {
+        pc.addTrack(audio, localStream);
+      });
+      console.log('Microphone access granted!');
+    };
   };
-
-  // const startAudioCapture = async () => {
-  //   // line below will wait until the user gives permission to use a mic, else it wont work and thats why we used async and await
-  //   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  //   const recorder = new MediaRecorder(stream);
-
-  //   recorder.ondataavailable = (event) => {
-  //     // need to handle the audio chunks - send to backend and save it!
-  //     if (event.data.size > 0) {
-  //       console.log('Data is available: ', event.data);
-  //     }
-  //   };
-
-  //   recorder.start();
-  //   setMediaRecorder(recorder);
-  //   console.log('Recording has started!');
-  // };
-
-  // const stopAudioCapture = () => {
-  //   if (mediaRecorder) {
-  //     mediaRecorder.stop();
-  //     console.log('Recording has stopped!');
-  //   }
-  // };
 
   return (
     <div className="main_container">
@@ -70,25 +56,12 @@ function App() {
       <div className="flex items-center">
         <button
           className="bg-black border-2 text-white mx-auto my-12 px-8 justify-center text-center py-5 rounded-4xl hover:bg-white hover:text-black hover:border-black hover:border-2 hover:transition-colors duration-300 ease-in-out"
-          onClick={() =>
-            sendMessage({
-              type: 'start-session',
-              message: 'Hello from frontend!',
-            })
-          }
+          onClick={() => startSession()}
         >
           Start Session
         </button>
 
-        <button
-          className="bg-black border-2 text-white mx-auto my-12 px-8 justify-center text-center py-5 rounded-4xl hover:bg-white hover:text-black hover:border-black hover:border-2 hover:transition-colors duration-300 ease-in-out"
-          onClick={() =>
-            sendMessage({
-              type: 'start-session',
-              message: 'Hello from frontend!',
-            })
-          }
-        >
+        <button className="bg-black border-2 text-white mx-auto my-12 px-8 justify-center text-center py-5 rounded-4xl hover:bg-white hover:text-black hover:border-black hover:border-2 hover:transition-colors duration-300 ease-in-out">
           Stop Session
         </button>
       </div>
