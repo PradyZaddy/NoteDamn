@@ -1,6 +1,6 @@
 import WebSocket, { WebSocketServer } from 'ws';
 
-const wss = new WebSocketServer({ port: 8080 }); // 8080 is just for the sake of example. Needs to be replaced with backend wala URL
+const wss = new WebSocketServer({ port: 8080 });
 
 let clients = [];
 

@@ -6,45 +6,60 @@ function App() {
   const audioContextRef = useRef(null);
   const streamRef = useRef(null);
 
+  useEffect(() => {
+    console.log('Live transcript:', transcript);
+  }, [transcript]);
+
   const startStream = async () => {
-    streamRef.current = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-    });
+    try {
+      streamRef.current = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+      audioContextRef.current = new AudioContext({ sampleRate: 16000 });
 
-    // setting up the audio context and loading the audio worklet
-    audioContextRef.current = new AudioContext();
-    await audioContextRef.current.audioWorklet.addModule(
-      '/audio-worklet-processor.js',
-    );
+      await audioContextRef.current.audioWorklet.addModule(
+        '/audio-worklet-processor.js',
+      );
 
-    const source = audioContextRef.current.createMediaStreamSource(
-      streamRef.current,
-    ); // loading our stream here
-    const workletNode = new AudioWorkletNode(
-      audioContextRef.current,
-      'pcm-processor',
-    ); // this helps sending messages from/to main thread and processor
+      const source = audioContextRef.current.createMediaStreamSource(
+        streamRef.current,
+      );
+      const workletNode = new AudioWorkletNode(
+        audioContextRef.current,
+        'pcm-processor',
+      );
 
-    // setting up the websocket connection now
-    wsRef.current = new WebSocket('ws://localhost:8080');
-    wsRef.current.binaryType = 'arraybuffer';
+      source.connect(workletNode).connect(audioContextRef.current.destination);
 
-    // listen for transcript messages // CHECK-POINT
-    wsRef.current.onmessage = (event) => {
-      setTranscript((prev) => prev + ' ' + event.data); // word-by-word
-    };
+      wsRef.current = new WebSocket('ws://localhost:8080');
+      wsRef.current.binaryType = 'arraybuffer';
 
-    // on receiving audio from the processor, send to backend
-    workletNode.port.onmessage = (event) => {
-      const pcmBuffer = event.data;
-      if (wsRef.current.readyState === WebSocket.OPEN) {
-        wsRef.current.send(pcmBuffer);
+      wsRef.current.onopen = () => {
+        console.log('WebSocket connected to backend');
+      };
 
-        console.log('Audio chunk is sent');
-      }
-    };
+      wsRef.current.onerror = (err) => {
+        console.error('WebSocket error:', err);
+      };
 
-    source.connect(workletNode).connect(audioContextRef.current.destination);
+      wsRef.current.onmessage = (event) => {
+        setTranscript((prev) => prev + ' ' + event.data);
+        console.log('Transcript received:', event.data);
+      };
+
+      workletNode.port.onmessage = (event) => {
+        const chunk = event.data;
+        const int16Array = new Int16Array(chunk);
+
+        console.log('Frontend audio chunk:', int16Array.slice(0, 10));
+
+        if (wsRef.current.readyState === WebSocket.OPEN) {
+          wsRef.current.send(chunk);
+        }
+      };
+    } catch (err) {
+      console.error('Error initializing stream:', err);
+    }
   };
 
   const stopStream = () => {
@@ -73,6 +88,10 @@ function App() {
         >
           Stop Session
         </button>
+      </div>
+
+      <div className="transcript-section text-xl whitespace-pre-wrap px-4 py-2">
+        {transcript}
       </div>
     </div>
   );
