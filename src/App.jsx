@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { runAgent } from '../agent-wrapper/agent-wrapper';
 
 function App() {
   const wsRef = useRef(null);
-  const [transcript, setTranscript] = useState('');
-  const audioContextRef = useRef(null);
   const streamRef = useRef(null);
+  const audioContextRef = useRef(null);
+
+  const [transcript, setTranscript] = useState('');
 
   useEffect(() => {
     console.log('Live transcript:', transcript);
@@ -13,13 +15,13 @@ function App() {
   const startStream = async () => {
     try {
       streamRef.current = await navigator.mediaDevices.getUserMedia({
-        audio: true,
+        audio: true, // gets the mic permission
       });
       audioContextRef.current = new AudioContext({ sampleRate: 16000 });
 
       await audioContextRef.current.audioWorklet.addModule(
         '/audio-worklet-processor.js',
-      );
+      ); // loads the worklet processor
 
       const source = audioContextRef.current.createMediaStreamSource(
         streamRef.current,
@@ -51,7 +53,7 @@ function App() {
         const chunk = event.data;
         const int16Array = new Int16Array(chunk);
 
-        console.log('Frontend audio chunk:', int16Array.slice(0, 10));
+        // console.log('Frontend audio chunk:', int16Array.slice(0, 10));
 
         if (wsRef.current.readyState === WebSocket.OPEN) {
           wsRef.current.send(chunk);
@@ -62,12 +64,16 @@ function App() {
     }
   };
 
-  const stopStream = () => {
+  const stopStream = async () => {
     wsRef.current.close();
     streamRef.current?.getTracks().forEach((t) => t.stop());
     audioContextRef.current?.close();
 
-    console.log('Stream session has stopped!');
+    console.log(
+      'Stream session has stopped! Sending transcript to Mistral now!',
+    );
+    const summary = await runAgent(transcript);
+    console.log(summary);
   };
 
   return (
