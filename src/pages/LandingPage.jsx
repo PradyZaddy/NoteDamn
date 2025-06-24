@@ -2,13 +2,22 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import backgroundImage from '../assets/unnamed.png';
+import feature1Photo from '../assets/summarisation.png';
+import feature2Photo from '../assets/noteMaker.png';
+import feature3Photo from '../assets/organisaedKnowledgeBase.png';
 
 const LandingPage = () => {
+  const navigate = useNavigate();
+
+  const handleNavigation = () => {
+    navigate('/auth');
+  };
   return (
     <div>
       <Header />
 
       <div className="w-[60%] mx-auto mt-25 mb-8">
+        {/* Photo section */}
         <section
           className="h-[400px] bg-cover bg-center flex items-center justify-center px-6 rounded-3xl"
           style={{
@@ -26,12 +35,73 @@ const LandingPage = () => {
           </div>
         </section>
 
+        {/* Key features section */}
         <section className="mt-10">
           <p className="text-4xl text-black font-bold mb-3">Key Features</p>
           <p style={{ color: 'gray' }}>
             Note-Damn offers a suite of tools designed to enhance your
             note-taking and learning experience
           </p>
+
+          <div className="flex mt-10 space-x-4">
+            <div
+              className="border-1 p-4 rounded-2xl"
+              style={{ borderColor: '#DEDBE5' }}
+            >
+              <img src={feature1Photo} className=" mb-4"></img>
+              <p className="text-xl mb-1 font-semibold">Smart Summarisation</p>
+              <p>
+                Automatically condense your notes into key takeaways, saving
+                your time and improving comprehension
+              </p>
+            </div>
+
+            <div
+              className="border-1 p-4 rounded-2xl"
+              style={{ borderColor: '#DEDBE5' }}
+            >
+              <img src={feature2Photo} className=" mb-4"></img>
+              <p className="text-xl mb-1 font-semibold">
+                Intelligent Note Maker
+              </p>
+              <p>
+                Create structured and insightful notes with our intuitive note
+                maker, designed for clarity and efficiency.
+              </p>
+            </div>
+
+            <div
+              className="border-1 p-4 rounded-2xl"
+              style={{ borderColor: '#DEDBE5' }}
+            >
+              <img src={feature3Photo} className=" mb-4"></img>
+              <p className="text-xl mb-1 font-semibold">
+                Organised Knowledge Base
+              </p>
+              <p>
+                Keep all your summarized notes and insights in one place, easily
+                accessible and searchable.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ending section */}
+        <section>
+          <div className="flex justify-center items-center mt-18">
+            <p className="text-4xl text-black font-bold mb-3">
+              Ready to Transform your Learning?
+            </p>
+          </div>
+          <div className="flex justify-center items-center mt-5">
+            <button
+              style={{ background: '#7847EB' }}
+              className="py-2 px-4 border-1 rounded-2xl text-white font-semibold"
+              onClick={() => handleNavigation()}
+            >
+              Get Started
+            </button>
+          </div>
         </section>
       </div>
     </div>
