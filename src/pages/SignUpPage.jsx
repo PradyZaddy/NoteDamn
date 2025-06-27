@@ -1,11 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
 const SignUpPage = () => {
   const navigate = useNavigate();
   const handleNavigation = () => {
     navigate('/auth');
+  };
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const auth = getAuth();
+
+  const [confirmedPassword, setConfirmedPassword] = useState('');
+
+  const handleSignUp = async () => {
+    if (confirmedPassword != password) {
+      alert("Sign Up Failed! The passwords don't match");
+      return;
+    }
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      navigate('/dash');
+    } catch (err) {
+      alert('Sign Up Failed: ' + err);
+    }
   };
 
   return (
@@ -25,16 +45,19 @@ const SignUpPage = () => {
             <input
               placeholder="Email"
               className="p-3 w-full rounded-2xl mb-4"
+              onChange={(e) => setEmail(e.target.value)}
               style={{ backgroundColor: '#DEDBE5' }}
             />
             <input
               placeholder="Password"
               className="p-3 w-full rounded-2xl mb-4"
+              onChange={(p) => setPassword(p.target.value)}
               style={{ backgroundColor: '#DEDBE5' }}
             />
             <input
               placeholder="Confirm Password"
               className="p-3 w-full rounded-2xl mb-4"
+              onChange={(p) => setConfirmedPassword(p.target.value)}
               style={{ backgroundColor: '#DEDBE5' }}
             />
           </div>
@@ -42,6 +65,7 @@ const SignUpPage = () => {
 
         <button
           className="p-3 w-full max-w-md rounded-2xl mb-4 text-white font-semibold hover:cursor-pointer"
+          onClick={() => handleSignUp()}
           style={{ backgroundColor: '#7847EB' }}
         >
           Sign Up

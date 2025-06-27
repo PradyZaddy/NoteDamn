@@ -16,7 +16,7 @@ const AuthPage = () => {
   const handleAuthorisation = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/dashboard');
+      navigate('/dash');
     } catch (er) {
       alert('log in failed: ' + er);
     }
