@@ -29,16 +29,14 @@ const Header = () => {
 
       <div className="space-x-4 mr-4 pb-2 mt-2">
         <button
-          style={{ background: '#7847EB' }}
-          className="py-2 px-4 border-1 rounded-2xl text-white font-semibold"
+          className="bg-[#7847EB] border border-[#7847EB] text-white font-semibold py-2 px-4 rounded-2xl hover:bg-white hover:text-[#7847EB] hover:border-[#7847EB] transition-colors duration-300 ease-in-out"
           onClick={() => handleNavigation()}
         >
           Get Started
         </button>
 
         <button
-          style={{ background: '#F2F0F5' }}
-          className="py-2 px-4 rounded-2xl text-black font-semibold"
+          className="bg-[#F2F0F5] text-black font-semibold py-2 px-4 rounded-2xl border border-[#F2F0F5] hover:bg-white hover:text-black hover:border-[#7847EB] transition-colors duration-300 ease-in-out"
           onClick={() => handleNavigation()}
         >
           Log In

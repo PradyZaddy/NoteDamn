@@ -95,8 +95,7 @@ const LandingPage = () => {
           </div>
           <div className="flex justify-center items-center mt-5">
             <button
-              style={{ background: '#7847EB' }}
-              className="py-2 px-4 border-1 rounded-2xl text-white font-semibold"
+              className="bg-[#7847EB] border border-[#7847EB] text-white font-semibold py-2 px-4 rounded-2xl hover:bg-white hover:text-[#7847EB] hover:border-[#7847EB] transition-colors duration-300 ease-in-out"
               onClick={() => handleNavigation()}
             >
               Get Started
