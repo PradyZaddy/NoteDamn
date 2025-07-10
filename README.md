@@ -8,7 +8,6 @@ Note-Damn is a real-time smart note-taking and summarization app. It captures sp
 
 - Live transcription using WebSockets and AudioWorklet
 - Smart summarization with Mistral 7B / OpenAI agent
-- Google Calendar integration to create events from action items
 - Slack integration to send meeting summaries
 - Authentication with Firebase (email/password and Google OAuth)
 - Dashboard with CRUD functionality for saved summaries
