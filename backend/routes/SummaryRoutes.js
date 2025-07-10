@@ -16,9 +16,10 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/', async (req, res) => {
+router.get('/:userId', async (req, res) => {
   try {
-    const summaries = await Summary.find();
+    const { userId } = req.params;
+    const summaries = await Summary.find({ userId });
     res.status(200).json(summaries);
   } catch (err) {
     res.status(500).json({ error: err.message });

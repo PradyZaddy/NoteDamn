@@ -1,12 +1,41 @@
+import { useEffect, useState } from 'react';
 import Header2 from '../components/Header2';
 import SideBar from '../components/sidebar';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const DashBoard = () => {
-  const data = [
-    { name: 'Summary Title 1', summary: 'summary1' },
-    { name: 'Summary Title 2', summary: 'summary1' },
-    { name: 'Summary Title 3', summary: 'summary1' },
-  ];
+  const [userId, setUserId] = useState(null);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Fetch data when only userId is available
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!userId) return;
+
+      try {
+        const res = await fetch(
+          `http://localhost:3030/api/summaries/${userId}`,
+        );
+        const retrievedData = await res.json();
+        setData(retrievedData);
+      } catch (err) {
+        console.log('Didn’t work!', err);
+      }
+    };
+
+    fetchData();
+  }, [userId]);
 
   return (
     <div className="h-screen flex flex-col">
@@ -42,7 +71,7 @@ const DashBoard = () => {
                       className="px-4 border-b border-gray-200 py-[15px]"
                       style={{ color: 'grey' }}
                     >
-                      {val.name}
+                      {val.title}
                     </td>
                     <td
                       className="px-4 border-b border-gray-200 py-[15px]"

@@ -35,7 +35,7 @@ Action Items:
   const summary = summaryMatch ? summaryMatch[1].trim() : aiOutput;
 
   try {
-    const saveRes = await fetch('http://localhost:8000/api/summary', {
+    const saveRes = await fetch('http://localhost:3030/api/summaries', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -44,6 +44,7 @@ Action Items:
         summary,
       }),
     });
+
     const saved = await saveRes.json();
     console.log('Saved to MongoDB:', saved);
   } catch (err) {

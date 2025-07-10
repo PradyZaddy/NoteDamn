@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { runAgent } from '../../agent-wrapper/agent-wrapper';
 import Header2 from '../components/Header2.jsx';
-import { getAuth } from 'firebase/auth';
 
 function SessionPage() {
   const wsRef = useRef(null);
@@ -13,9 +12,6 @@ function SessionPage() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [summaryGenerated, setSummaryGenerated] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const auth = getAuth();
-  const userId = auth.currentUser?.uid;
 
   useEffect(() => {
     console.log('Live transcript:', transcript);

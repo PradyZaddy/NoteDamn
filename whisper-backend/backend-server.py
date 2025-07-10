@@ -34,8 +34,6 @@ async def transcribe_and_send(ws):
         audio_buffer = bytearray()
         return
 
-    sf.write("debug.wav", audio_np, SAMPLE_RATE)
-    print("Saved debug.wav")
 # only for debug and shi above
 
 
